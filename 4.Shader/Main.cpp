@@ -39,7 +39,7 @@ int main()
 	}
 #pragma endregion
 
-	Shader ourShader("shader.vert", "shader.frag");
+	Shader ourShader("x64/Debug/Shaders/shader.vert", "x64/Debug/Shaders/shader.frag");
 
 	// Vertices
 #pragma region
@@ -84,8 +84,7 @@ int main()
         glfwPollEvents();
 	}
 	glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    //glDeleteProgram(shaderProgram);
+	glDeleteBuffers(1, &VBO);
 
     glfwTerminate();
     return 0;

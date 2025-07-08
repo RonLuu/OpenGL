@@ -54,6 +54,7 @@ public:
 		#pragma endregion
 
 		// 2. Compile shaders
+		#pragma region
 		int success;
 		char infoLog[512];
 
@@ -78,7 +79,10 @@ public:
 			glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
 			std::cout << "Error: Can't compile fragment shader\n";
 		}
+		#pragma endregion
 
+		// 3. Link the shaders
+		#pragma region
 		shaderProgram = glCreateProgram();
 		glAttachShader(shaderProgram, vertexShader);
 		glAttachShader(shaderProgram, fragmentShader);
@@ -89,6 +93,9 @@ public:
 			glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
 			std::cout << "Error: Can't link shader program\n";
 		}
+		#pragma endregion
+
+		// 4. Delete the remaining shader
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
 
