@@ -89,6 +89,11 @@ public:
 	{
 		glUseProgram(shaderID);
 	}
+
+	void setInt(const std::string &name, int value) const
+	{
+		glUniform1i(glGetUniformLocation(shaderID, name.c_str()), value);
+	}
 };
 
 #endif
