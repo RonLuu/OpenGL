@@ -7,6 +7,7 @@
 
 const unsigned int WIDTH = 800;
 const unsigned int HEIGHT = 800;
+float mixValue = 0.0f;
 void framebuffer_size_callback(GLFWwindow * window, int width, int height);
 void processInput(GLFWwindow * window);
 
@@ -36,11 +37,11 @@ int main()
 	Shader myShader("x64/Debug/Shaders/shader.vert", "x64/Debug/Shaders/shader.frag");
 
 	float vertices[] = {
-		// Position				Colour					Texture coord
-		 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	 1.0f,  1.0f,// top right
-		 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	 1.0f, 0.0f,// bottom right
-		-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	 0.0f, 0.0f,// bottom left
-		-0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 1.0f,		 0.0f,  1.0f// top left
+		// positions          // colors           // texture coords (note that we changed them to 'zoom in' on our texture image)
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
 	};
 
 	unsigned int indices[] = {
@@ -82,7 +83,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// Load first image
-	unsigned char * data = stbi_load("pop_cat_close.jpg", &width, &height, &nChannels, 0);
+	unsigned char * data = stbi_load("monkey_close.jpg", &width, &height, &nChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -106,7 +107,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// Load second image
-	data = stbi_load("pop_cat_open.jpg", &width, &height, &nChannels, 0);
+	data = stbi_load("monkey_open.jpg", &width, &height, &nChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -121,19 +122,20 @@ int main()
 	myShader.use(); // don't forget to activate/use the shader before setting uniforms!
 	myShader.setInt("texture1", 0);
 	myShader.setInt("texture2", 1);
+		
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		myShader.setFloat("mixValue", mixValue);
 
 		// bind textures on corresponding texture units
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
-
 		myShader.use();
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -154,6 +156,20 @@ void processInput(GLFWwindow * window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		//std::cout << mixValue << std::endl;
+		mixValue += 0.001f; // change this value accordingly (might be too slow or too fast based on system hardware)
+		if (mixValue >= 1.0f)
+			mixValue = 1.0f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		//std::cout << mixValue << std::endl;
+		mixValue -= 0.001f; // change this value accordingly (might be too slow or too fast based on system hardware)
+		if (mixValue <= 0.0f)
+			mixValue = 0.0f;
+	}
 }
 
 
