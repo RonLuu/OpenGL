@@ -10,13 +10,14 @@ class Texture
 public:
 	unsigned int textureID;
 	GLenum textureType;
+	// Generates and Binds Texture
 	Texture(GLenum texture)
 	{
 		glGenTextures(1, &textureID);
 		Bind();
 		textureType = texture;
 	}
-
+	// Bind Texure
 	void Bind()
 	{
 		glBindTexture(GL_TEXTURE_2D, textureID);

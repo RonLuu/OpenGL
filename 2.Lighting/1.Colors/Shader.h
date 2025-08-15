@@ -14,7 +14,7 @@ class Shader
 {
 public:
 	unsigned int shaderID;
-
+	// Create a shader from the vertex path and frag path
 	Shader(const char * vertexPath, const char * fragPath)
 	{
 		std::string vertexCode;
@@ -37,7 +37,7 @@ public:
 
 			vertexFile.close();
 			fragFile.close();
-			
+
 			vertexCode = vertextStream.str();
 			fragCode = fragStream.str();
 		}
@@ -61,7 +61,7 @@ public:
 			glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
 			std::cout << "Failed to compile the vertex shader\n";
 		}
-		
+
 		unsigned int fragShader = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragShader, 1, &fShaderCode, NULL);
 		glCompileShader(fragShader);
@@ -87,17 +87,18 @@ public:
 		glDeleteShader(fragShader);
 	}
 
+	// Use Shader
 	void use()
 	{
 		glUseProgram(shaderID);
 	}
 
-	void setInt(const std::string &name, int value) const
+	void setInt(const std::string & name, int value) const
 	{
 		glUniform1i(glGetUniformLocation(shaderID, name.c_str()), value);
 	}
 
-	void setFloat(const std::string &name, float value) const
+	void setFloat(const std::string & name, float value) const
 	{
 		glUniform1f(glGetUniformLocation(shaderID, name.c_str()), value);
 	}
