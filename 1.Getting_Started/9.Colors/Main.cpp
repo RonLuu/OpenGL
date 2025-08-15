@@ -2,7 +2,6 @@
 #include <GLFW/glfw3.h>
 #include <stb/stb_image.h>
 
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -11,7 +10,7 @@
 #include "Camera.h"
 #include "VBO.h"
 #include "VAO.h"
-
+#include "Texture.h"
 #include <iostream>
 
 const int WIDTH = 800;
@@ -104,57 +103,19 @@ int main()
     vao.LinkVBO(vbo, 0, 3, 5 * sizeof(float), (void*)0);
     vao.LinkVBO(vbo, 1, 2, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
-    #pragma region
-    unsigned int texture1, texture2;
-
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-    unsigned char * data = stbi_load("monkey_listen.jpg", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    data = stbi_load("Horizon.jpg", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
+    Texture texture1(GL_TEXTURE0);
+    texture1.SetWraping();
+    texture1.SetFiltering();
+    texture1.SetImage("monkey_listen.jpg");
+    
+    Texture texture2(GL_TEXTURE1);
+    texture2.SetWraping();
+    texture2.SetFiltering();
+    texture2.SetImage("horizon.jpg");
 
     myShader.use();
     myShader.setInt("texture1", 0);
     myShader.setInt("texture2", 1);
-#pragma endregion
 
     while (!glfwWindowShouldClose(window))
     {
@@ -169,10 +130,8 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // bind textures on corresponding texture unit
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        texture1.ActiveAndBind();
+        texture2.ActiveAndBind();
 
         // activate shader
         myShader.use();
@@ -184,9 +143,6 @@ int main()
         myShader.setMat4("view", view);
 
         vao.Bind();
-        //glBindVertexArray(VAO);
-
-
         for (unsigned int i = 0; i < 10; i++)
         {
             // calculate the model matrix for each object and pass it to shader before drawing
@@ -203,7 +159,8 @@ int main()
         glfwPollEvents();
     }
 
-    //vbo.Delete();
+    vbo.Delete();
+    vao.Delete();
 
     glfwTerminate();
     return 0;
@@ -244,7 +201,6 @@ void loadGlad()
 		exit(-1);
 	}
 }
-
 
 void mouse_callback(GLFWwindow * window, double xPosIn, double yPosIn)
 {
