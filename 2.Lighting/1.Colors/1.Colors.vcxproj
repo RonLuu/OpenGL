@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{e4098f46-3895-461a-9872-37a74f3cdaee}</ProjectGuid>
+    <ProjectGuid>{b853c727-9200-4ef2-a172-52c89f563759}</ProjectGuid>
     <RootNamespace>My1Colors</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -150,13 +150,6 @@
     <ClCompile Include="..\..\glad.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="stb.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="VAO.h" />
-    <ClInclude Include="VBO.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

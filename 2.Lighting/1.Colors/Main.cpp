@@ -7,27 +7,24 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
-#include "VAO.h"
-#include "VBO.h"
-#include "Texture.h"
 #include "Camera.h"
-
+#include "VBO.h"
+#include "VAO.h"
+#include "Texture.h"
 #include <iostream>
 
-// Constant variables
 const int WIDTH = 800;
-const int HEIGHT= 800;
+const int HEIGHT = 800;
 
 // Global variables
-float deltaTime = 0.0f; // Time between each frame
-float lastFrame = 0.0f; // Time of the last frame occurs
-
-float lastX = WIDTH / 2.0f; // x position of the mouse
-float lastY = HEIGHT/ 2.0f; // Y position of the mouse
+float deltaTime = 0.0f;	// Time between current frame and last frame
+float lastFrame = 0.0f; // Time of last frame
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f)); // A camera have a position of (0,0,3)
+float lastX = WIDTH / 2.0f; // Middle screen in the horizontal direction
+float lastY = HEIGHT / 2.0f; // Middle screen in the vertical direction
 bool firstMouse = true;
 
-// Functions
+
 void framebuffer_size_callback(GLFWwindow * window, int width, int height);
 void mouse_callback(GLFWwindow * window, double xpos, double ypos);
 void scroll_callback(GLFWwindow * window, double xoffset, double yoffset);
@@ -43,7 +40,6 @@ int main()
     loadGlad();
     glEnable(GL_DEPTH_TEST);
     Shader myShader("x64/Debug/Shaders/shader.vert", "x64/Debug/Shaders/shader.frag");
-
     float vertices[] = {
 -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
  0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -87,6 +83,7 @@ int main()
 -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
+    // world space positions of our cubes
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f,  0.0f,  0.0f),
         glm::vec3(2.0f,  5.0f, -15.0f),
@@ -100,11 +97,11 @@ int main()
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
 
-    //Intialise VAO and VBO
+    // Initialise and Bind it
     VAO vao;
     VBO vbo(vertices, sizeof(vertices));
-    vao.LinkVBO(vbo, 0, 3, 5, (void *)0);
-    vao.LinkVBO(vbo, 1, 2, 5, (void *)(3*sizeof(float)));
+    vao.LinkVBO(vbo, 0, 3, 5 * sizeof(float), (void *)0);
+    vao.LinkVBO(vbo, 1, 2, 5 * sizeof(float), (void *)(3 * sizeof(float)));
 
     Texture texture1(GL_TEXTURE0);
     texture1.SetWraping();
@@ -119,7 +116,6 @@ int main()
     myShader.use();
     myShader.setInt("texture1", 0);
     myShader.setInt("texture2", 1);
-
 
     while (!glfwWindowShouldClose(window))
     {
@@ -172,15 +168,15 @@ int main()
 
 void initialiseGLFW()
 {
-	glfwInit();
-	glfwInitHint(GL_MAJOR_VERSION, 3);
-	glfwInitHint(GL_MINOR_VERSION, 3);
-	glfwInitHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwInit();
+    glfwInitHint(GL_MAJOR_VERSION, 3);
+    glfwInitHint(GL_MINOR_VERSION, 3);
+    glfwInitHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }
 
 GLFWwindow * createWindow()
 {
-    GLFWwindow * window = glfwCreateWindow(WIDTH, HEIGHT, "9. Colors", NULL, NULL);
+    GLFWwindow * window = glfwCreateWindow(WIDTH, HEIGHT, "1. Colors", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create a window\n";
